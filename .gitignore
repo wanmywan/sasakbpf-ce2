@@ -1,0 +1,19 @@
+# Secrets
+secrets.env
+userspace/internal/config/secrets_obfuscated.go
+
+# Build artifacts
+userspace/bin/
+*.ko
+*.o
+*.mod.c
+build/
+
+# OS junk
+.DS_Store
+*.swp
+.vscode/
+.idea/
+
+# Lab artifacts
+sasakbpf.zip
