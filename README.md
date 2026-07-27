@@ -120,10 +120,10 @@ The build requires three secrets. Here's how to obtain each one:
 Generate a 32-byte (256-bit) random key:
 
 ```bash
-openssl rand -hex 16
+openssl rand -hex 32
 ```
 
-Example output: `a1b2c3d4e5f60718293a4b5c6d7e8f90`
+Example output: `a1b2c3d4e5f60718293a4b5c6d7e8f90xxxxxxxxxxxxxx`
 
 ### Configure
 
