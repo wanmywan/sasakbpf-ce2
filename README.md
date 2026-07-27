@@ -99,20 +99,30 @@ The build requires three secrets. Here's how to obtain each one:
 1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
 2. Click **New Application** → give it a name (e.g., `System Monitor`)
 3. Go to the **Bot** tab → click **Add Bot** → click **Reset Token** → copy the token
-4. Under **Privileged Gateway Intents**, enable all three:
+<img src="images/1.png" alt="Bot" width="700">
+<img src="images/2.png" alt="Token" width="700">
+
+5. Under **Privileged Gateway Intents**, enable all three:
    - **Presence Intent**
    - **Server Members Intent**
    - **Message Content Intent**
-5. Invite the bot to your server — open this URL in a browser (replace `CLIENT_ID` with the **Application ID** from the **General Information** tab):
+<img src="images/3.png" alt="ohayooo" width="700"> 
+6. Invite the bot to your server channel — open this URL in a browser (replace `CLIENT_ID` with the **Application ID** from the **General Information** tab):
+<img src="images/6.png" alt="copy id" width="700">
+
    ```
-   https://discord.com/oauth2/authorize?client_id=CLIENT_ID&permissions=3072&scope=bot
+   https://discord.com/oauth2/authorize?client_id=<Application ID DC portal>&permissions=3072&scope=bot
    ```
+
 
 #### 2. SD_CHANNEL_ID — Command Channel ID
 
 1. In Discord, go to **User Settings → App Settings → Advanced**
 2. Enable **Developer Mode**
-3. Right-click the channel where you want to receive commands → **Copy ID**
+<img src="images/4.png" alt="Channel ID" width="700">
+
+4. Right-click the channel where you want to receive commands → **Copy ID**
+<img src="images/5.png" alt="Copy ID" width="200">
 
 #### 3. SD_AES_KEY_HEX — Encryption Key
 
