@@ -175,8 +175,6 @@ This single command:
 ./build.sh linux                      # produces userspace/bin/
 # Connect:
 ./sasakbpf-bin -target <targetID>
-mmands
-quit                                    # exit CLI
 ```
 
 
