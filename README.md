@@ -68,7 +68,7 @@ flowchart TB
 | Bootstrap | systemd unit + Go loader (`cilium/ebpf`) | No kernel module, pure userspace BPF loading |
 | C2 | Discord WSS gateway | AES-256-GCM encrypted `sd1` protocol, blends with Discord CDN traffic |
 | Operator | Go CLI (`sasakbpf-mac`) | Terminal-based REPL with readline, multi-target, tab completion |
-| Obfuscation | XOR secrets + garble (optional) | Build-time secret encoding, Go binary obfuscation |
+| Obfuscation | XOR secrets | Build-time secret encoding, Go binary obfuscation |
 
 
 - **Process hiding** — hide agent, loader, and arbitrary PIDs from `/proc` and `ps`
