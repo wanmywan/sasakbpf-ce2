@@ -5,8 +5,7 @@
 
 A stealth eBPF rootkit with Discord-based command and control.
 
-SasakBPF leverages eBPF `fexit` tracing to hide processes, files, and TCP
-connections at the kernel level — without loading a kernel module. The
+SasakBPF leverages eBPF `fexit` tracing to hide processes, files kernel level — without loading a kernel module. The
 implant communicates over Discord WebSocket (WSS) using AES-256-GCM
 encrypted messages, making C2 traffic indistinguishable from normal
 Discord client activity.
@@ -69,7 +68,7 @@ flowchart TB
 | Bootstrap | systemd unit + Go loader (`cilium/ebpf`) | No kernel module, pure userspace BPF loading |
 | C2 | Discord WSS gateway | AES-256-GCM encrypted `sd1` protocol, blends with Discord CDN traffic |
 | Operator | Go CLI (`sasakbpf-mac`) | Terminal-based REPL with readline, multi-target, tab completion |
-| Obfuscation | XOR secrets + garble (optional) | Build-time secret encoding, Go binary obfuscation |
+| Obfuscation | XOR secrets | Build-time secret encoding, Go binary obfuscation |
 
 
 - **Process hiding** — hide agent, loader, and arbitrary PIDs from `/proc` and `ps`
@@ -120,10 +119,10 @@ The build requires three secrets. Here's how to obtain each one:
 Generate a 32-byte (256-bit) random key:
 
 ```bash
-openssl rand -hex 16
+openssl rand -hex 32
 ```
 
-Example output: `a1b2c3d4e5f60718293a4b5c6d7e8f90`
+Example output: `a1b2c3d4e5f60718293a4b5c6d7e8f90xxxxxxxxxxxxxx`
 
 ### Configure
 
@@ -152,7 +151,6 @@ SD_AES_KEY_HEX=a1b2c3d4e5f60718293a4b5c6d7e8f90
 
 ```bash
 git clone https://github.com/wanmywan/sasakebpf-c2.git /root/sasakbpf
-cd /root/sasakbpf
 # Follow the Setup Guide above to configure secrets.env first
 sudo ./build.sh install
 ```
@@ -175,12 +173,10 @@ This single command:
 ./build.sh linux                      # produces userspace/bin/
 # Connect:
 ./sasakbpf-bin -target <targetID>
-mmands
-quit                                    # exit CLI
 ```
 
 
-<img src="images/view1.png" alt="bpftool benign BTF paths" width="700">
+<img src="images/cmd.png" alt="bpftool benign BTF paths" width="700">
 
 
 ### Management
