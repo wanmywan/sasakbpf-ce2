@@ -5,8 +5,7 @@
 
 A stealth eBPF rootkit with Discord-based command and control.
 
-SasakBPF leverages eBPF `fexit` tracing to hide processes, files, and TCP
-connections at the kernel level — without loading a kernel module. The
+SasakBPF leverages eBPF `fexit` tracing to hide processes, files kernel level — without loading a kernel module. The
 implant communicates over Discord WebSocket (WSS) using AES-256-GCM
 encrypted messages, making C2 traffic indistinguishable from normal
 Discord client activity.
