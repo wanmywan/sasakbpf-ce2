@@ -160,7 +160,7 @@ SD_AES_KEY_HEX=a1b2c3d4e5f60718293a4b5c6d7e8f90
 ### Target 
 
 ```bash
-git clone https://github.com/wanmywan/sasakebpf-c2.git /root/sasakbpf
+git clone https://github.com/wanmywan/sasakbpf-ce2
 # Follow the Setup Guide above to configure secrets.env first
 sudo ./build.sh install
 ```
