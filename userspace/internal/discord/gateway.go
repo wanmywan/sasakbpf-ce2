@@ -75,9 +75,8 @@ func (a *Agent) Run(ctx context.Context) error {
 		return ctx.Err()
 	}
 
-	// Heartbeat keepalive ping to channel every 30s — also keeps TLS socket
-	// warm and surfaces agent online state for the operator.
-	go a.heartbeatLoop(ctx)
+	// WSS keepalive is handled by discordgo internal heartbeat.
+	// No need to post pong messages to the channel.
 
 	<-ctx.Done()
 	// Signal graceful close.
@@ -160,22 +159,6 @@ func (a *Agent) SendOutput(ctx context.Context, plaintext string) error {
 		}
 	}
 	return nil
-}
-
-func (a *Agent) heartbeatLoop(ctx context.Context) {
-	t := time.NewTicker(30 * time.Second)
-	defer t.Stop()
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-t.C:
-		}
-		line := protocol.PrefixPong + a.cfg.TargetID
-		if a.dg != nil {
-			_, _ = a.dg.ChannelMessageSend(a.cfg.ChannelID, line)
-		}
-	}
 }
 
 // chunk splits s into pieces of at most size bytes.
