@@ -177,7 +177,7 @@ This single command:
 ```
 
 
-<img src="images/viewx.png" alt="bpftool benign BTF paths" width="700">
+<img src="images/cmd.png" alt="bpftool benign BTF paths" width="700">
 
 
 ### Management
